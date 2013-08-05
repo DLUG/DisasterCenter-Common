@@ -71,7 +71,7 @@ public class DisasterType {
 		}
 	}
 	
-	public static String Code2String(int code){
+	public static String code2string(int code){
 		return typeMap.get(code);
 	}
 	
