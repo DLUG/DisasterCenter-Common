@@ -72,7 +72,7 @@ public class CoordinateTools {
 			return null;
 		
 		double xn = kmaX - KMA_MAP_ORIGIN_X - 1;
-		double yn = ro - kmaY + KMA_MAP_ORIGIN_Y - 1;
+		double yn = ro - kmaY + KMA_MAP_ORIGIN_Y + 1;
 		
 		double ra = Math.sqrt(xn * xn + yn * yn);
 		
