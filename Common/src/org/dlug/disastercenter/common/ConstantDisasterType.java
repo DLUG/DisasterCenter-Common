@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DisasterType {
+public class ConstantDisasterType {
 	private static Map<Integer, String> typeMap = new HashMap<Integer, String>();
 	private static List<Integer> typeList = new ArrayList<Integer>();
 	
@@ -77,5 +77,9 @@ public class DisasterType {
 	
 	public static List<Integer> getTypeList(){
 		return typeList;
+	}
+	
+	public static Map<Integer, String> getTypeMap(){
+		return typeMap;
 	}
 }

@@ -49,6 +49,7 @@ public class ApiKMA {
 			
 			Map<String, Object> result = new HashMap<String, Object>();
 			
+			result.put("hour", Integer.parseInt(xmlData.getChild("hour").get(0).getValue()));
 			result.put("temp", Double.parseDouble(xmlData.getChild("temp").get(0).getValue()));
 			result.put("humidity", Integer.parseInt(xmlData.getChild("reh").get(0).getValue()));
 			result.put("wind_speed", Double.parseDouble(xmlData.getChild("ws").get(0).getValue()));
