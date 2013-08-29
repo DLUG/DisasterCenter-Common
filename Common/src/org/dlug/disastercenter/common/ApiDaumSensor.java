@@ -10,6 +10,7 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Properties;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -17,15 +18,29 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class ApiDaumSensor {
-	public final static SimpleDateFormat dateFormatDaum = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-	public final static SimpleDateFormat dateFormatDaumForQuery = new SimpleDateFormat("yyyyMMddHHmm");
+	private ApiDaumSensor instance = new ApiDaumSensor();
+
+	public final static SimpleDateFormat DATE_FORMAT_DAUM = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+	public final static SimpleDateFormat DATE_FORMAT_DAUM_FOR_QUERY = new SimpleDateFormat("yyyyMMddHHmm");
 	
-	private final static String apiUrl = "http://apis.daum.net/sensorql/weather.json";
-	private final static String apiKey = "DAUM_SENSORQL_DEMO_APIKEY";
+	private final static String API_URL = "http://apis.daum.net/sensorql/weather.json";
+	private static String API_KEY;
+	
+	
+	private ApiDaumSensor(){
+		Properties apiProperty = new Properties();
+		try {
+			apiProperty.load(this.getClass().getClassLoader().getResourceAsStream("apis.property"));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		API_KEY = apiProperty.getProperty("daumapi.weathersensor");
+	}
 	
 	public static Date convertDateType(JSONObject daumDate){
 		try {
-			return dateFormatDaum.parse((String) daumDate.get("$date"));
+			return DATE_FORMAT_DAUM.parse((String) daumDate.get("$date"));
 		} catch (java.text.ParseException e) {
 			e.printStackTrace();
 		}
@@ -36,6 +51,11 @@ public class ApiDaumSensor {
 	public static long getSensorAmount(){
 		String query = "SELECT count(resourceId) FROM sensorMetaCollection;";
 		JSONArray resultArray = getJSON(query);
+		
+		if(resultArray == null){
+			System.out.println("ApiDaumSensor: API_ERROR");
+			return 0;
+		}
 		
 		return (Long) ((JSONObject) resultArray.get(0)).get("count");
 	}
@@ -61,8 +81,8 @@ public class ApiDaumSensor {
 		endCal.setTime(startCal.getTime());
 		endCal.add(Calendar.HOUR_OF_DAY, 5);
 		
-		String startDatetime = dateFormatDaumForQuery.format(startCal.getTime());
-		String endDatetime = dateFormatDaumForQuery.format(endCal.getTime());
+		String startDatetime = DATE_FORMAT_DAUM_FOR_QUERY.format(startCal.getTime());
+		String endDatetime = DATE_FORMAT_DAUM_FOR_QUERY.format(endCal.getTime());
 		String query = "SELECT * FROM sensorRecortCollection WHERE observationTime > " + startDatetime 
 				+ " AND observationTime < " + endDatetime
 				+ " SORT temperature DESC LIMIT 0, 1;";
@@ -79,8 +99,8 @@ public class ApiDaumSensor {
 		endCal.setTime(startCal.getTime());
 		endCal.add(Calendar.HOUR_OF_DAY, 5);
 		
-		String startDatetime = dateFormatDaumForQuery.format(startCal.getTime());
-		String endDatetime = dateFormatDaumForQuery.format(endCal.getTime());
+		String startDatetime = DATE_FORMAT_DAUM_FOR_QUERY.format(startCal.getTime());
+		String endDatetime = DATE_FORMAT_DAUM_FOR_QUERY.format(endCal.getTime());
 		String query = "SELECT * FROM sensorRecortCollection WHERE observationTime > " + startDatetime 
 				+ " AND observationTime < " + endDatetime
 				+ " SORT humidity ASC LIMIT 0, 1;";
@@ -97,8 +117,8 @@ public class ApiDaumSensor {
 		endCal.setTime(startCal.getTime());
 		endCal.add(Calendar.HOUR_OF_DAY, 4);
 		
-		String startDatetime = dateFormatDaumForQuery.format(startCal.getTime());
-		String endDatetime = dateFormatDaumForQuery.format(endCal.getTime());
+		String startDatetime = DATE_FORMAT_DAUM_FOR_QUERY.format(startCal.getTime());
+		String endDatetime = DATE_FORMAT_DAUM_FOR_QUERY.format(endCal.getTime());
 		String query = "SELECT * FROM sensorRecortCollection WHERE observationTime > " + startDatetime 
 				+ " AND observationTime < " + endDatetime
 				+ " SORT temperature ASC LIMIT 0, 1;";
@@ -112,7 +132,7 @@ public class ApiDaumSensor {
 		long startTimestamp = thisDatetime.getTime() - period;
 		Date startDatetime = new Date(startTimestamp);
 		
-		String startDatetimeString = dateFormatDaumForQuery.format(startDatetime);
+		String startDatetimeString = DATE_FORMAT_DAUM_FOR_QUERY.format(startDatetime);
 		String query = "SELECT * FROM sensorRecordCollection WHERE temperature > 330 AND observationTime > " + startDatetimeString;
 		
 		return getJSON(query);
@@ -124,7 +144,7 @@ public class ApiDaumSensor {
 		long startTimestamp = thisDatetime.getTime() - period;
 		Date startDatetime = new Date(startTimestamp);
 		
-		String startDatetimeString = dateFormatDaumForQuery.format(startDatetime);
+		String startDatetimeString = DATE_FORMAT_DAUM_FOR_QUERY.format(startDatetime);
 		String query = "SELECT * FROM sensorRecordCollection WHERE windSpeed > 140 AND observationTime > " + startDatetimeString;
 		
 		return getJSON(query);
@@ -137,7 +157,7 @@ public class ApiDaumSensor {
 			e.printStackTrace();
 		}
 		
-		String requestUrl = apiUrl + "?apikey=" + apiKey + "&q=" + query;
+		String requestUrl = API_URL + "?apikey=" + API_KEY + "&q=" + query;
 		
 		try {
 			URL url;

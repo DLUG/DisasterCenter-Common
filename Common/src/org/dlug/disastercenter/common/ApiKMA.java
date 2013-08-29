@@ -111,6 +111,7 @@ public class ApiKMA {
 			int todayAlertLowTempEnd = -1;
 			
 			Double todayMaxRain6meter = 0.0;
+			Double todayRainAmount = 0.0;
 			int todayWatchHardRainStart = -1;
 			int todayAlertHardRainStart = -1;
 			
@@ -127,6 +128,9 @@ public class ApiKMA {
 				int tmpHumidity = Integer.parseInt(xmlDatas.get(i).getChild("reh").get(0).getValue());
 				double tmpRain6Meter = Double.parseDouble(xmlDatas.get(i).getChild("r06").get(0).getValue());
 				double tmpWindSpeed = Double.parseDouble(xmlDatas.get(i).getChild("ws").get(0).getValue());
+				
+				if(tmpHour % 6 == 0)
+					todayRainAmount += tmpRain6Meter; 
 				
 				if(tmpTemp > todayMaxTemp)
 					todayMaxTemp = tmpTemp;
@@ -231,6 +235,7 @@ public class ApiKMA {
 				result.put("watch_fast_wind_start", todayWatchFastWindStart);
 			
 			result.put("humidity_max", todayMaxHumidity);
+			result.put("today_rain_amount", todayRainAmount);
 			
 			return result;
 		} catch (MalformedURLException e) {

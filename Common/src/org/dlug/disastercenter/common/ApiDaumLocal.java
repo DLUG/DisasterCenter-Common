@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Properties;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -12,9 +13,22 @@ import org.json.simple.parser.ParseException;
 
 public class ApiDaumLocal {
 	private final static String API_URL = "http://apis.daum.net/local/geo/coord2addr";
-	private final static String API_KEY = "DAUM_LOCAL_DEMO_APIKEY";
+	private static String API_KEY;
 	
 	private final static String COORD_SYSTEM = "wgs84";
+	
+	private static ApiDaumLocal instance = new ApiDaumLocal();
+	
+	private ApiDaumLocal(){
+		Properties apiProperty = new Properties();
+		try {
+			apiProperty.load(this.getClass().getClassLoader().getResourceAsStream("apis.property"));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		API_KEY = apiProperty.getProperty("daumapi.local");
+	}
 	
 	public static String getAddress(double lat, double lng){
 		JSONObject queryResult = getJSON(lat, lng);
